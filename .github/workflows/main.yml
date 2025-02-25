@@ -87,6 +87,9 @@ jobs:
       - build_frontend_and_push_to_docker_hub
       # - build_gateway_and_push_to_docker_hub
     steps:
+    - name: Check if docker-compose.production.yml exists
+      run: ls -l docker-compose.production.yml
+    steps:
     - name: Checkout repo
       uses: actions/checkout@v3
     # Копируем docker-compose.production.yml на продакшен-сервер
@@ -98,7 +101,7 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        source: "./docker-compose.production.yml"
+        source: "docker-compose.production.yml"
         target: "taski"
     - name: Executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
