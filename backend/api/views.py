@@ -402,4 +402,5 @@ class TagViewSet(viewsets.ModelViewSet):
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes=[permissions.AllowAny]
     filter_backends = (filters.SearchFilter,)
