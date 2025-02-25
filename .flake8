@@ -1,0 +1,2 @@
+[flake8]
+ignore = I001, I004, I005
