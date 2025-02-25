@@ -16,7 +16,7 @@ services:
       image: bauklu/foodgram_backend
       env_file: ../.env
       volumes:
-        - static:/app/collected_static
+        - static:/app/static
         - media:/app/media
       command: >
         sh -c "python manage.py migrate &&
