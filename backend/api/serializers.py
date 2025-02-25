@@ -1,0 +1,327 @@
+"""Модуль сериализаторов для API."""
+import base64
+import uuid
+
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
+from rest_framework import serializers  # type: ignore
+
+from recipes.models import (Ingredient, Recipe, Tag, RecipeIngredient,
+                            Subscribe)
+
+
+User = get_user_model()
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор для регистрации пользователя."""
+
+    password = serializers.CharField(write_only=True, required=True)
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        """Определяет модель и поля для сериализации."""
+
+        model = User
+        fields = (
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'password',
+            'avatar',
+            'is_subscribed'
+        )
+
+    def create(self, validated_data):
+        """Возвращает пользователя после создания."""
+        user = User.objects.create_user(**validated_data)
+        return user
+
+    def get_is_subscribed(self, obj):
+        """Определяет, подписан ли текущий пользователь на obj."""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Subscribe.objects.filter(
+                user=request.user,
+                subscription=obj
+            ).exists()
+        return False
+
+
+class Base64ImageField(serializers.ImageField):
+    """Сериализатор для обработки изображений base64."""
+
+    def to_internal_value(self, data):
+        """Декодирование base64 и создание файла."""
+        if isinstance(data, str) and data.startswith('data:image'):
+            format, imgstr = data.split(';base64,')
+            ext = format.split('/')[-1]
+            filename = f'{uuid.uuid4()}.{ext}'
+            data = ContentFile(base64.b64decode(imgstr), name=filename)
+
+        return super().to_internal_value(data)
+
+
+class AvatarSerializer(serializers.ModelSerializer):
+    """Сериализатор изменения аватара текущего пользователя."""
+
+    avatar = Base64ImageField(required=True)
+
+    class Meta:
+        """Определяет модель и поля для сериализации."""
+
+        model = User
+        fields = ('avatar',)
+
+
+class SetPasswordSerializer(serializers.Serializer):
+    """Сериализатор смены пароля."""
+
+    current_password = serializers.CharField(
+        write_only=True,
+        required=True
+    )
+    new_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        validators=[validate_password]
+    )
+
+    def validate_current_password(self, value):
+        """Проверка текущего пароля."""
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError(
+                "Неверный текущий пароль."
+            )
+        return value
+
+    def update_password(self):
+        """Обновление пароля пользователя."""
+        user = self.context['request'].user
+        user.set_password(self.validated_data['new_password'])
+        user.save()
+
+
+class TagSerializer(serializers.ModelSerializer):
+    """Сериализатор для тегов."""
+
+    class Meta:
+        """Определяет модель и поля для сериализации."""
+
+        model = Tag
+        fields = ('id', 'name', 'slug')
+
+
+class IngredientSerializer(serializers.ModelSerializer):
+    """Сериализатор для ингредиентов."""
+
+    class Meta:
+        """Определяет модель и поля для сериализации."""
+
+        model = Ingredient
+        fields = ('id', 'name', 'measurement_unit')
+
+
+class RecipeIngredientSerializer(serializers.ModelSerializer):
+    """Сериализатор для ингредиентов в рецепте."""
+
+    name = serializers.CharField(source='ingredient.name', read_only=True)
+    measurement_unit = serializers.CharField(
+        source='ingredient.measurement_unit',
+        read_only=True
+    )
+    quantity = serializers.FloatField()
+
+    class Meta:
+        """Определяет модель и поля для сериализации."""
+
+        model = RecipeIngredient
+        fields = ('name', 'measurement_unit', 'quantity')
+
+
+class RecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор для рецептов."""
+
+    author = UserSerializer(read_only=True)
+    ingredients = serializers.ListField(write_only=True)
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Tag.objects.all()
+    )
+    cooking_time = serializers.IntegerField(min_value=1)
+    image = Base64ImageField(required=True)
+    image_url = serializers.SerializerMethodField(
+        read_only=True
+    )
+
+    class Meta:
+        """Определяет модель и поля для сериализации."""
+
+        model = Recipe
+        fields = (
+            'id', 'author', 'name', 'image', 'text', 'cooking_time',
+            'ingredients', 'tags', 'image_url'
+        )
+        read_only_fields = ('author',)
+
+    def to_representation(self, instance):
+        """Преобразует объект в JSON для ответа API (GET-запросы)."""
+        representation = super().to_representation(instance)
+        representation['ingredients'] = [
+            {
+                'name': item.ingredient.name,
+                'measurement_unit': item.ingredient.measurement_unit,
+                'quantuty': item.quantity
+            }
+            for item in instance.recipeingredient_set.all()
+        ]
+        representation['tags'] = [tag.slug for tag in instance.tags.all()]
+        return representation
+
+    def to_internal_value(self, data):
+        """Преобразует  входные данные в правильный формат (POST-запросы)."""
+        ingredients = data.get('ingredients')
+        if not ingredients:
+            raise serializers.ValidationError(
+                {
+                    'ingredients':
+                    'Рецепт должен содержать хотя бы один ингредиент.'
+                }
+            )
+        validated_ingredients = []
+        ingredient_names = set()
+        for item in ingredients:
+            name = item.get('name')
+            quantity = item.get('quantity')
+
+            if not name or not quantity:
+                raise serializers.ValidationError(
+                    {
+                        'ingredients':
+                        'ингредиент должен содержать "name" и "quantity"'
+                    }
+                )
+            if name in ingredient_names:
+                raise serializers.ValidationError(
+                    {
+                        'ingredients':
+                        f'Ингредиент {name} указан дважды.'
+                    }
+                )
+            try:
+                ingredient = Ingredient.objects.get(name=name)
+            except Ingredient.DoesNotExist:
+                raise serializers.ValidationError(
+                    {
+                        'ingredients':
+                        f'Ингредиент {name} не найден.'
+                    }
+                )
+            validated_ingredients.append(
+                {'ingredient': ingredient, 'quantity': quantity}
+            )
+            ingredient_names.add(name)
+
+        data['ingredients'] = validated_ingredients
+        return super().to_internal_value(data)
+
+    def get_image_url(self, obj):
+        """Получение изображения рецепта."""
+        if obj.image:
+            return obj.image.url
+        return None
+
+    def common_process_ingredients(self, recipe, ingredients):
+        """Общий метод для 'create' и 'update'."""
+        recipe.recipeingredient_set.all().delete()
+
+        recipe_ingredients = [
+            RecipeIngredient(
+                recipe=recipe,
+                ingredient=item['ingredient'],
+                quantity=item['quantity'],
+            )
+            for item in ingredients
+        ]
+        RecipeIngredient.objects.bulk_create(recipe_ingredients)
+
+    def create(self, validated_data):
+        """Создание рецепта."""
+        tags_data = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+
+        recipe = Recipe.objects.create(**validated_data)
+        recipe.tags.set(tags_data)
+
+        self.common_process_ingredients(recipe, ingredients)
+        return recipe
+
+    def update(self, instance, validated_data):
+        """Редактирование рецепта."""
+        tags_data = validated_data.pop('tags', None)
+        ingredients = validated_data.pop('ingredients', None)
+
+        instance.name = validated_data.get('name', instance.name)
+        instance.text = validated_data.get('text', instance.text)
+        instance.cooking_time = validated_data.get(
+            'cooking_time',
+            instance.cooking_time
+        )
+        instance.image = validated_data.get('image', instance.image)
+        instance.save()
+
+        if tags_data is not None:
+            instance.tags.set(tags_data)
+        instance.save()
+
+        if ingredients is not None:
+            self.common_process_ingredients(instance, ingredients)
+        instance.save()
+        return instance
+
+
+class RecipeFavoriteSerializer(serializers.ModelSerializer):
+    """Сериалайзер для избранных рецептов."""
+
+    class Meta:
+        """Определяет модель и поля для сериализации."""
+
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+
+class SubscribeSerializer(serializers.ModelSerializer):
+    """Сериализатор для подписок."""
+
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    subscription = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all()
+    )
+
+    class Meta:
+        """Определяет модель и поля для сериализации."""
+
+        model = Subscribe
+        fields = ('id', 'user', 'subscription')
+
+    def validate(self, data):
+        """Валидация подписки на пользователя."""
+        user = self.context['request'].user
+        subscription = data.get('subscription')
+
+        if Subscribe.objects.filter(
+            user=user,
+            subscription=subscription
+        ).exists():
+            raise serializers.ValidationError(
+                'Вы уже подписаны на этого пользователя'
+            )
+        if user == subscription:
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя'
+            )
+        return data
