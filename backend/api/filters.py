@@ -1,6 +1,7 @@
 """Фильтрация рецептов."""
 
 import django_filters  # type: ignore
+
 from recipes.models import Recipe, Tag
 
 

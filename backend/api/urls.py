@@ -1,17 +1,12 @@
 """Модуль URL-конфигурации для API приложения foodgram."""
 
-from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import include, path
 from rest_framework import routers  # type: ignore
 
-from api.views import (
-    AuthViewSet,
-    RecipeViewSet,
-    IngredientViewSet,
-    TagViewSet,
-    UserViewSet
-)
+from api.views import (AuthViewSet, IngredientViewSet, RecipeViewSet,
+                       TagViewSet, UserViewSet)
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet, basename='users')

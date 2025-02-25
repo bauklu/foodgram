@@ -1,38 +1,28 @@
 """API views."""
 
-from django.http import HttpResponse
-from django.urls import reverse
-from django.shortcuts import get_object_or_404
-from django.db.models import Sum
 from django.contrib.auth import get_user_model
+from django.db.models import Sum
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend  # type: ignore
+from rest_framework import (filters, permissions, status,  # type: ignore
+                            viewsets)
 from rest_framework.authtoken.models import Token  # type: ignore
 from rest_framework.decorators import action  # type: ignore
-from rest_framework.response import Response  # type: ignore
-from rest_framework.permissions import IsAuthenticated  # type: ignore
-from rest_framework import (  # type: ignore
-    permissions,
-    viewsets,
-    status,
-    filters
-)
 from rest_framework.pagination import PageNumberPagination  # type: ignore
+from rest_framework.permissions import IsAuthenticated  # type: ignore
+from rest_framework.response import Response  # type: ignore
 
-from recipes.models import (Ingredient, Recipe, Tag, Favorite,
-                            ShoppingCart, RecipeIngredient, Subscribe)
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Subscribe, Tag)
+
 from .filters import RecipeFilter
-from .serializers import (
-    IngredientSerializer,
-    RecipeSerializer,
-    TagSerializer,
-    AvatarSerializer,
-    UserSerializer,
-    SetPasswordSerializer,
-    SubscribeSerializer,
-    RecipeFavoriteSerializer
-)
 from .permissions import AuthorOrReadOnly
-
+from .serializers import (AvatarSerializer, IngredientSerializer,
+                          RecipeFavoriteSerializer, RecipeSerializer,
+                          SetPasswordSerializer, SubscribeSerializer,
+                          TagSerializer, UserSerializer)
 
 User = get_user_model()
 
