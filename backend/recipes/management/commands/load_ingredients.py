@@ -1,4 +1,5 @@
 """Команда для загрузки данных из .json файла в ингредиенты."""
+
 import json
 
 from django.core.management.base import BaseCommand

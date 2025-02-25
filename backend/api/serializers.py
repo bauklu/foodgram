@@ -5,9 +5,8 @@ import uuid
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.files.base import ContentFile
-from rest_framework import serializers  # type: ignore
-
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Subscribe, Tag
+from rest_framework import serializers  # type: ignore
 
 User = get_user_model()
 

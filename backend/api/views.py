@@ -6,6 +6,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend  # type: ignore
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Subscribe, Tag)
 from rest_framework import (filters, permissions, status,  # type: ignore
                             viewsets)
 from rest_framework.authtoken.models import Token  # type: ignore
@@ -13,9 +15,6 @@ from rest_framework.decorators import action  # type: ignore
 from rest_framework.pagination import PageNumberPagination  # type: ignore
 from rest_framework.permissions import IsAuthenticated  # type: ignore
 from rest_framework.response import Response  # type: ignore
-
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Subscribe, Tag)
 
 from .filters import RecipeFilter
 from .permissions import AuthorOrReadOnly
