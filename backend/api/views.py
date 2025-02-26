@@ -250,7 +250,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all().order_by('-id')
     serializer_class = RecipeSerializer
-    # filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     permission_classes = [permissions.AllowAny]
     filterset_class = RecipeFilter
     pagination_class = RecipePagination
