@@ -16,7 +16,8 @@ services:
       image: bauklu/foodgram_backend
       env_file: ../.env
       volumes:
-        - static:/app/static
+      #  - static:/app/static
+        - static:/app/collected_static
         - media:/app/media
       command: >
         sh -c "python manage.py migrate &&
@@ -26,7 +27,8 @@ services:
     container_name: foodgram-front
     image: bauklu/foodgram_frontend
     volumes:
-      - ../frontend/:/app/result_build/
+    #  - ../frontend/:/app/result_build/
+      - ../frontend/build:/usr/share/nginx/html/
   nginx:
     container_name: foodgram-proxy
     image: nginx:1.25.4-alpine
