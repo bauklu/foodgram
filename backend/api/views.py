@@ -257,7 +257,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True, methods=['get'], url_path='get-link',
-        permission_classes = [permissions.AllowAny]
+        permission_classes=[permissions.AllowAny]
     )
     def get_link(self, request, pk=None):
         """Создает короткую ссылку на рецепт."""
