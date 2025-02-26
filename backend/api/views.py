@@ -405,4 +405,3 @@ class TagViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
     permission_classes = [permissions.AllowAny]
     filter_backends = (filters.SearchFilter,)
-    
