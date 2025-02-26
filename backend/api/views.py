@@ -250,13 +250,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all().order_by('-id')
     serializer_class = RecipeSerializer
-    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    # filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    permission_classes = [permissions.AllowAny]
     filterset_class = RecipeFilter
     pagination_class = RecipePagination
 
     @action(
         detail=True, methods=['get'], url_path='get-link',
-        permission_classes=[permissions.AllowAny]
+        permission_classes = [permissions.AllowAny]
     )
     def get_link(self, request, pk=None):
         """Создает короткую ссылку на рецепт."""
