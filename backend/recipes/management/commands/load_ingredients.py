@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         """Добавляет данные в модель Ingredient из файла .json."""
-        with open('../data/ingredients.json') as f:
+        with open('app/data/ingredients.json') as f:
             data = json.load(f)
             for item in data:
                 Ingredient.objects.create(
