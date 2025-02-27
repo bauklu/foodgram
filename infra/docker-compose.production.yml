@@ -19,7 +19,7 @@ services:
       #  - static:/app/static
         - static:/app/collected_static
         - media:/app/media
-        - home/yc-user/taski/data:/app/data
+        - /home/yc-user/taski/data:/app/data
       command: >
         sh -c "python manage.py migrate &&
                python manage.py collectstatic --noinput &&
