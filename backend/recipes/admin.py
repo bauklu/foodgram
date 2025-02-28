@@ -17,6 +17,11 @@ class RecipeAdmin(admin.ModelAdmin):
                     'favorite_count'
                     )
     readonly_fields = ('favorite_count',)
+    search_fields = ('author', 'name')
+    list_filter = ('author', 'name', 'tags',)
+    list_editable = ('name', 'text', 'cooking_time')
+
+    filter_horizontal = ('tags', 'ingredients')
 
     def display_tags(self, obj):
         """Выводит теги в списке рецептов."""
@@ -27,12 +32,6 @@ class RecipeAdmin(admin.ModelAdmin):
         """Добавляет количество добавлений рецепта в избранное."""
         return obj.favorited_by.count()
     favorite_count.short_description = 'Добавлений в избранное'
-
-    filter_horizontal = ('tags', 'ingredients')
-
-    search_fields = ('author', 'name')
-    list_filter = ('author', 'name', 'tags',)
-    list_editable = ('name', 'text', 'cooking_time')
 
 
 @admin.register(Ingredient)
