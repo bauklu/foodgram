@@ -28,6 +28,9 @@ class RecipeAdmin(admin.ModelAdmin):
         return obj.favorited_by.count()
     favorite_count.short_description = 'Добавлений в избранное'
 
+    filter_horizontal = ('tags', 'ingredients')
+    # fields = ('name', 'author', 'text', 'cooking_time', 'tsgs', 'ingredients')
+    
     search_fields = ('author', 'name')
     list_filter = ('author', 'name', 'tags',)
     list_editable = ('name', 'text', 'cooking_time')
