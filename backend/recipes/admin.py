@@ -4,6 +4,16 @@ from django.contrib import admin
 from .models import Ingredient, Recipe, Tag
 
 
+class IngredientInline(admin.TabularInline):
+    model = Recipe.ingredients.through
+    extra = 1
+
+
+class TagInline(admin.TabularInline):
+    model = Recipe.tags.through
+    extra = 1
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """Настройка админки для модели Recipe."""
@@ -21,7 +31,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('author', 'name', 'tags',)
     list_editable = ('name', 'text', 'cooking_time')
 
-    filter_horizontal = ('tags', 'ingredients')
+    inlines = [IngredientInline, TagInline]
 
     def display_tags(self, obj):
         """Выводит теги в списке рецептов."""
