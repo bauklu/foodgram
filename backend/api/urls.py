@@ -16,6 +16,9 @@ router.register(r'ingredients', IngredientViewSet)
 router.register(r'tags', TagViewSet, basename='tags')
 
 urlpatterns = [
+    path('signin/',
+         AuthViewSet.as_view({'post': 'obtain_token'}), name='signin'
+         ),
     path('', include(router.urls)),
     path('', include('djoser.urls')),
     path('', include('djoser.urls.authtoken')),
