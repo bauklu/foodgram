@@ -119,6 +119,16 @@ INSTALLED_APPS += ['django.contrib.staticfiles']
 
 AUTH_USER_MODEL = 'users.User'
 
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ORIGINS = [
+    "https://taskilearn.hopto.org",
+    "http://localhost:3000"
+]
+CSRF_TRUSRED_ORIGINS = [
+    "https://taskilearn.hopto.org",
+    "http://localhost:3000"
+]
+
 
 # DJOSER = {
 #     'LOGIN_FIELD': 'email',
