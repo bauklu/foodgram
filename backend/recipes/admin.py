@@ -21,12 +21,12 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('author', 'name', 'tags',)
     list_editable = ('name', 'text', 'cooking_time')
 
-    fieldsets = (
-        (None, {'fields': ('name', 'author', 'text', 'cooking_time')}),
-        ('Дополнительные поля', {'fields': ('tags', 'ingredients')}),
-    )
+    # fieldsets = (
+    #     (None, {'fields': ('name', 'author', 'text', 'cooking_time')}),
+    #     ('Дополнительные поля', {'fields': ('tags', 'ingredients')}),
+    # )
 
-    filter_horizontal = ('tags', 'ingredients')
+    # filter_horizontal = ('tags', 'ingredients')
 
     def display_tags(self, obj):
         """Выводит теги в списке рецептов."""
