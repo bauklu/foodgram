@@ -19,7 +19,6 @@ class RecipeAdmin(admin.ModelAdmin):
     """Настройка админки для модели Recipe."""
 
     inlines = [RecipeIngredientInline, TagRecipeInline]
-    filter_horizontal = ('tags',)
     list_display = ('id',
                     'name',
                     'author',
