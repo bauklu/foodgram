@@ -4,10 +4,17 @@ from django.contrib import admin
 from .models import Ingredient, Recipe, Tag
 
 
+class RecipeIngredientInline(admin.TabularInline):
+    model = Recipe.ingredients.through
+    extra = 1
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """Настройка админки для модели Recipe."""
 
+    inlines = [RecipeIngredientInline]
+    filter_horizontal = ('tags',)
     list_display = ('id',
                     'name',
                     'author',
@@ -25,11 +32,9 @@ class RecipeAdmin(admin.ModelAdmin):
     #     (None, {'fields': ('name', 'author', 'text', 'cooking_time')}),
     #     ('Дополнительные поля', {'fields': ('tags', 'ingredients')}),
     # )
-    fields = (
-        'name', 'author', 'text', 'cooking_time', 'tags', 'ingredients'
-    )
-
-    filter_horizontal = ('tags', 'ingredients')
+    # fields = (
+    #     'name', 'author', 'text', 'cooking_time', 'tags', 'ingredients'
+    # )
 
     def display_tags(self, obj):
         """Выводит теги в списке рецептов."""
