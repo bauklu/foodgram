@@ -1,11 +1,16 @@
 """Настройка админки для модели Recipe в проекте."""
 from django.contrib import admin
 
-from .models import Ingredient, Recipe, Tag
+from .models import Ingredient, Recipe, Tag, Recipeingredients, TagRecipe
 
 
 class RecipeIngredientInline(admin.TabularInline):
-    model = Recipe.ingredients.through
+    model = Recipeingredients
+    extra = 1
+
+
+class TagRecipeInline(admin.TabularInline):
+    model = TagRecipe
     extra = 1
 
 
@@ -13,7 +18,7 @@ class RecipeIngredientInline(admin.TabularInline):
 class RecipeAdmin(admin.ModelAdmin):
     """Настройка админки для модели Recipe."""
 
-    inlines = [RecipeIngredientInline]
+    inlines = [RecipeIngredientInline, TagRecipeInline]
     filter_horizontal = ('tags',)
     list_display = ('id',
                     'name',
@@ -27,14 +32,6 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('author', 'name')
     list_filter = ('author', 'name', 'tags',)
     list_editable = ('name', 'text', 'cooking_time')
-
-    # fieldsets = (
-    #     (None, {'fields': ('name', 'author', 'text', 'cooking_time')}),
-    #     ('Дополнительные поля', {'fields': ('tags', 'ingredients')}),
-    # )
-    # fields = (
-    #     'name', 'author', 'text', 'cooking_time', 'tags', 'ingredients'
-    # )
 
     def display_tags(self, obj):
         """Выводит теги в списке рецептов."""
