@@ -36,7 +36,7 @@ class AuthViewSet(viewsets.ViewSet):
         permission_classes=[permissions.AllowAny]
     )
     def obtain_token(self, request):
-        """ВЫдает токен по email и password."""
+        """Выдает токен по email и password."""
         email = request.data.get('email')
         password = request.data.get('password')
         if not email or not password:
