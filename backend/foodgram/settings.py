@@ -124,10 +124,10 @@ CORS_ALLOW_ORIGINS = [
     "https://taskilearn.hopto.org",
     "http://localhost:3000"
 ]
-CSRF_TRUSRED_ORIGINS = [
-    "https://taskilearn.hopto.org",
-    "http://localhost:3000"
-]
+# CSRF_TRUSRED_ORIGINS = [
+#     "https://taskilearn.hopto.org",
+#     "http://localhost:3000"
+# ]
 
 
 # DJOSER = {
