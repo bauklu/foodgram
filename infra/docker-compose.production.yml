@@ -28,11 +28,7 @@ services:
     container_name: foodgram-front
     image: bauklu/foodgram_frontend
     env_file: ../.env
-    # command: cp -r /app/result_build/. /static/
     volumes:
-    #  - ../frontend/:/app/result_build/
-    #  - ../frontend/build:/usr/share/nginx/html/
-    #  - static:/static
       - ../frontend/build:/app/result_build/
   nginx:
     container_name: foodgram-proxy
