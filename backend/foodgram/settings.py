@@ -129,6 +129,9 @@ CSRF_TRUSRED_ORIGINS = [
     "http://localhost:3000"
 ]
 
+CSRF_COOKIE_SECURE = True
+CSRF_USE_SESSIONS = True
+SESSION_COOKIE_SECURE = True
 
 # DJOSER = {
 #     'LOGIN_FIELD': 'email',
