@@ -119,11 +119,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_USER_MODEL = 'users.User'
 
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ORIGINS = [
-    "https://taskilearn.hopto.org",
-    "http://localhost:3000"
-]
+# CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_ORIGINS = [
+#     "https://taskilearn.hopto.org",
+#     "http://localhost:3000"
+# ]
 # CSRF_TRUSRED_ORIGINS = [
 #     "https://taskilearn.hopto.org",
 #     "http://localhost:3000"
