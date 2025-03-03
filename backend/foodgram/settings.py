@@ -115,7 +115,7 @@ MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# INSTALLED_APPS += ['django.contrib.staticfiles']
+INSTALLED_APPS += ['django.contrib.staticfiles']
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -124,10 +124,10 @@ CORS_ALLOW_ORIGINS = [
     "https://taskilearn.hopto.org",
     "http://localhost:3000"
 ]
-# CSRF_TRUSRED_ORIGINS = [
-#     "https://taskilearn.hopto.org",
-#     "http://localhost:3000"
-# ]
+CSRF_TRUSRED_ORIGINS = [
+    "https://taskilearn.hopto.org",
+    "http://localhost:3000"
+]
 
 
 # DJOSER = {
