@@ -5,20 +5,19 @@ from django.conf.urls.static import static
 from django.urls import include, path
 from rest_framework import routers  # type: ignore
 
-from api.views import (AuthViewSet, IngredientViewSet, RecipeViewSet,
+from api.views import (IngredientViewSet, RecipeViewSet,
                        TagViewSet, UserViewSet)
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet, basename='users')
-router.register(r'auth', AuthViewSet, basename='auth')
 router.register(r'recipes', RecipeViewSet, basename='recipe')
 router.register(r'ingredients', IngredientViewSet)
 router.register(r'tags', TagViewSet, basename='tags')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('', include('djoser.urls')),
-    path('', include('djoser.urls.authtoken')),
+    path('auth/', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
 ]
 
 if settings.DEBUG:

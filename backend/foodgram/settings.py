@@ -2,7 +2,7 @@
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv  # type: ignore
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -109,34 +109,24 @@ USE_TZ = True
 
 
 STATIC_URL = 'backend_static/'
+# STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'collected_static'
 
 MEDIA_URL = '/media/'
-# MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# INSTALLED_APPS += ['django.contrib.staticfiles']
 
 AUTH_USER_MODEL = 'users.User'
 
-# CORS_ALLOW_CREDENTIALS = True
-# CORS_ALLOW_ORIGINS = [
-#     "https://taskilearn.hopto.org",
-#     "http://localhost:3000"
-# ]
-# CSRF_TRUSRED_ORIGINS = [
-#     "https://taskilearn.hopto.org",
-#     "http://localhost:3000"
-# ]
-
-
-# DJOSER = {
-#     'LOGIN_FIELD': 'email',
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    # 'SERIALIZERS': {
+    #     'user': 'api.serializers.UserSerializers'
+    # }
 #     'PERMISSIONS':{
 #         'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
 #         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly']
 #     },
-# }
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -149,7 +139,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend'
