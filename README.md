@@ -3,16 +3,60 @@
 По адресу http://localhost изучите фронтенд веб-приложения, а по адресу http://localhost/api/docs/ — спецификацию API.
 
 ## Описание  проекта
-Проект foodgram — это система создания галереи котиков.Пользователи могут добавлять просматривать, добавлять и редактировать рецепты, загружать фото рецептов.
+  «Фудграм» — это сайт, на котором можно публиковать собственные рецепты, добавлять чужие рецепты в избранное, подписываться на других авторов и создавать список покупок для заданных блюд.
 
-## Использованные технологии
- Back-end
-  Python, Django, DRF
- Database
-  PostgreSQL
- Tools
-  visual studio code
-  Git, GitHub, workflow, Docker
+## Сайт 
+  https://taskilearn.hopto.org/
+
+## Информация об авторе:
+  [Баукова Людмила](https://github.com/bauklu)
+
+## CD/CI для развертывания
+  GitHub Actions
+
+# Команды локального развертывания с Докером
+
+## Клонирование репозитория
+  git clone https://github.com/https://github.com/bauklu/foodgram.git
+  cd https://github.com/bauklu
+## Переход в папку с docker-compose.yml
+  cd infra
+## Создание .env файла
+  SECRET_KEY
+  DEBUG
+  ALLOWED_HOSTS
+  POSTGRES_USER
+  POSTGRES_PASSWORD
+  POSTGRES_DB
+  DB_NAME
+  DB_HOST
+  DB_PORT
+
+## Запуск Docker-контейнеров
+  docker-compose up -d
+
+## Выполнение миграций и создание суперпользователя
+  docker-compose exec foodgram-backend python manage.py migrate  # Применяем миграции
+  docker-compose exec foodgram-backend python manage.py createsuperuser
+
+## Сборка статических файлов
+  docker-compose exec foodgram-backend python manage.py collectstatic --noinput
+
+## Остановка контейнеров
+  docker-compose down
+
+## Настройка виртуального окружения
+  .venv/bin/activate
+
+## Импорт продуктов из JSON фикстур
+  docker-compose exec foodgram-backend python manage.py loaddata load_ingredients/ingredients.json
+
+## Запуск сервера
+  docker-compose exec backend python manage.py runserver 0.0.0.0:8000
+  
+
+## Инструменты и стек:
+ #python #JSON #YAML #Django #React #API #Docker #Nginx #PostgreSQL #Gunicorn #JWT #Postman
 
 ### Как запустить проект:
 
