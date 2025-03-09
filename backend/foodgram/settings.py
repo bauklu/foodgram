@@ -119,13 +119,6 @@ AUTH_USER_MODEL = 'users.User'
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
-    # 'SERIALIZERS': {
-    #     'user': 'api.serializers.UserSerializers'
-    # }
-#     'PERMISSIONS':{
-#         'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
-#         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly']
-#     },
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
