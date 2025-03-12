@@ -2,6 +2,7 @@
 
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
+from django.db.models import Count, Prefetch
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -11,25 +12,19 @@ from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
 from rest_framework import (filters, permissions,
                             status, viewsets)
 from rest_framework.decorators import action
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from .pagination import RecipePagination
 from .filters import RecipeFilter, CustomSearchFilter
 from .permissions import AuthorOrReadOnly
 from .serializers import (AvatarSerializer, IngredientSerializer,
                           RecipeFavoriteSerializer, RecipeSerializer,
                           SetPasswordSerializer, SubscribeSerializer,
-                          TagSerializer, UserSerializer, UserDetailSerializer)
+                          SubscriptionSerializer, TagSerializer,
+                          UserSerializer, UserDetailSerializer)
 
 User = get_user_model()
-
-
-class RecipePagination(PageNumberPagination):
-    """Кастомная пагинация для рецептов."""
-
-    page_size = 6
-    page_size_query_param = 'limit'
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -129,55 +124,25 @@ class UserViewSet(viewsets.ModelViewSet):
     def subscriptions(self, request):
         """Получение списка подписок текущего пользователя."""
         user = request.user
-        subscriptions = User.objects.filter(subscriptions__user=request.user)
-        paginator = RecipePagination()
-        paginated_subscriptions = paginator.paginate_queryset(
-            subscriptions, request)
 
-        response_data = []
-        for subscription in paginated_subscriptions:
-            is_subscribed = Subscribe.objects.filter(
-                user=user, subscription=subscription).exists()
-            data = {'subscription': subscription.id}
-            serializer = SubscribeSerializer(
-                data=data,
-                context={'request': request}
+        subscriptions = User.objects.filter(
+            subscriptions__user=user
+        ).annotate(
+            recipes_count=Count('recipe')
+        ).prefetch_related(
+            Prefetch(
+                'recipe',
+                queryset=Recipe.objects.all(),
+                to_attr='prefetched_recipes'
             )
-            if not Subscribe.objects.filter(
-                user=user,
-                subscription=subscription
-            ).exists():
-                serializer.is_valid(raise_exception=True)
-                serializer.save(user=user)
-            recipes = Recipe.objects.filter(author=subscription)
-
-            recipes_limit = request.query_params.get('recipes_limit')
-            if recipes_limit:
-                try:
-                    recipes_limit = int(recipes_limit)
-                    recipes = recipes[:recipes_limit]
-                except ValueError:
-                    return Response(
-                        {'error': 'recipes_limit должен быть числом'},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-            recipes_data = RecipeFavoriteSerializer(recipes, many=True).data
-
-            subscription_data = {
-                'id': subscription.id,
-                'email': subscription.email,
-                'username': subscription.username,
-                'is_subscribed': is_subscribed,
-                'first_name': subscription.first_name,
-                'last_name': subscription.last_name,
-                'avatar': request.build_absolute_uri(
-                    subscription.avatar.url
-                ) if subscription.avatar else None,
-                'recipes': recipes_data,
-                'recipes_count': recipes.count(),
-            }
-            response_data.append(subscription_data)
-        return paginator.get_paginated_response(response_data)
+        )
+        paginated_subscriptions = self.paginate_queryset(subscriptions)
+        serializer = SubscriptionSerializer(
+            paginated_subscriptions,
+            many=True,
+            context={'request': request}
+        )
+        return self.get_paginated_response(serializer.data)
 
     @action(detail=True, methods=['post', 'delete'], url_path='subscribe')
     def subscribe(self, request, pk=None):
@@ -300,21 +265,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if request.method == 'DELETE':
-            cart_item = ShoppingCart.objects.filter(
-                user=user,
-                recipe=recipe
-            )
-            if not cart_item.exists():
-                return Response(
-                    {'error': 'Рецепта нет в списке покупок'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            cart_item.delete()
+        cart_item = ShoppingCart.objects.filter(
+            user=user,
+            recipe=recipe
+        )
+        if not cart_item.exists():
             return Response(
-                {'message': 'Рецепт удален из списка покупок'},
-                status=status.HTTP_204_NO_CONTENT
+                {'error': 'Рецепта нет в списке покупок'},
+                status=status.HTTP_400_BAD_REQUEST
             )
+        cart_item.delete()
+        return Response(
+            {'message': 'Рецепт удален из списка покупок'},
+            status=status.HTTP_204_NO_CONTENT
+        )
 
     @action(
         detail=False, methods=['get'],
@@ -370,21 +334,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if request.method == 'DELETE':
-            favorite_item = Favorite.objects.filter(
-                user=user,
-                recipe=recipe
-            )
-            if not favorite_item.exists():
-                return Response(
-                    {'error': 'Рецепта нет в избранном'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            favorite_item.delete()
+        favorite_item = Favorite.objects.filter(
+            user=user,
+            recipe=recipe
+        )
+        if not favorite_item.exists():
             return Response(
-                {'message': 'Рецепт удалён из избранного'},
-                status=status.HTTP_204_NO_CONTENT
+                {'error': 'Рецепта нет в избранном'},
+                status=status.HTTP_400_BAD_REQUEST
             )
+        favorite_item.delete()
+        return Response(
+            {'message': 'Рецепт удалён из избранного'},
+            status=status.HTTP_204_NO_CONTENT
+        )
 
     def get_permissions(self):
         """Разные права доступа в зависимости от запроса."""

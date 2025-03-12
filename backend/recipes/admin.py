@@ -1,7 +1,7 @@
 """Настройка админки для модели Recipe в проекте."""
 from django.contrib import admin
 
-from .models import Ingredient, Recipe, Tag, RecipeIngredient, TagRecipe
+from .models import Ingredient, Recipe, Tag, RecipeIngredient
 
 
 class RecipeIngredientInline(admin.TabularInline):
@@ -9,16 +9,11 @@ class RecipeIngredientInline(admin.TabularInline):
     extra = 1
 
 
-class TagRecipeInline(admin.TabularInline):
-    model = TagRecipe
-    extra = 1
-
-
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """Настройка админки для модели Recipe."""
 
-    inlines = [RecipeIngredientInline, TagRecipeInline]
+    inlines = [RecipeIngredientInline]
     list_display = ('id',
                     'name',
                     'author',
@@ -32,10 +27,10 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('author', 'name', 'tags',)
     list_editable = ('name', 'text', 'cooking_time')
 
+    @admin.display(description='Теги')
     def display_tags(self, obj):
         """Выводит теги в списке рецептов."""
         return ', '.join(tag.name for tag in obj.tags.all())
-    display_tags.short_description = 'Теги'
 
     def favorite_count(self, obj):
         """Добавляет количество добавлений рецепта в избранное."""
@@ -53,7 +48,12 @@ class IngredientAdmin(admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    """Настройка админки для модели User."""
+    """Настройка админки для модели Tag."""
 
     list_display = ('id', 'name', 'slug')
     list_editable = ('name', 'slug')
+
+
+@admin.register(RecipeIngredient)
+class RecipeIngredientAdmin(admin.ModelAdmin):
+    """Настройка админки для модели RecipeIngredient."""

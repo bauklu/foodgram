@@ -1,0 +1,12 @@
+# Для пользователей
+USERNAME_MAX_LENGTH = 150
+FIRST_NAME_MAX_LENGTH = 150
+LAST_NAME_MAX_LENGTH = 150
+EMAIL_MAX_LENGTH = 254
+
+# Для рецептов и ингредиентов
+DEFAULT_PAGE_SIZE = 6
+
+MIN_INGREDIENT_AMOUNT = 1
+INGREDIENT_AMOUNT_ERROR_MSG = "Количество ингредиента должно быть не менее 1."
+TAG_NAME_MAX_LENGTH = 64

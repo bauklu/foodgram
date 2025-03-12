@@ -3,23 +3,30 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
+from constants import (
+    USERNAME_MAX_LENGTH,
+    FIRST_NAME_MAX_LENGTH,
+    LAST_NAME_MAX_LENGTH,
+    EMAIL_MAX_LENGTH
+)
+
 
 class User(AbstractUser):
     """Модель пользователя проекта foodgram."""
 
     first_name = models.CharField(
-        max_length=150,
+        max_length=FIRST_NAME_MAX_LENGTH,
         verbose_name='Имя',
         blank=False
     )
     last_name = models.CharField(
-        max_length=150,
+        max_length=LAST_NAME_MAX_LENGTH,
         verbose_name='Фамилия',
         blank=False
     )
 
     username = models.CharField(
-        max_length=150,
+        max_length=USERNAME_MAX_LENGTH,
         unique=True,
         validators=(UnicodeUsernameValidator(),),
         error_messages={
@@ -30,7 +37,7 @@ class User(AbstractUser):
     )
 
     email = models.EmailField(
-        max_length=254,
+        max_length=EMAIL_MAX_LENGTH,
         unique=True,
         verbose_name='E-mail'
     )
