@@ -143,13 +143,12 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
-    """Сериализатор для ингредиентов в рецепте."""
+    """ериализатор для ингредиентов в рецепте."""
 
     id = serializers.IntegerField(source='ingredient.id', read_only=True)
     name = serializers.CharField(source='ingredient.name', read_only=True)
     measurement_unit = serializers.CharField(
-        source='ingredient.measurement_unit',
-        read_only=True
+        source='ingredient.measurement_unit', read_only=True
     )
     amount = serializers.IntegerField(
         source='quantity',
@@ -158,7 +157,6 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        """Определяет модель и поля для сериализации."""
         model = RecipeIngredient
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
@@ -209,15 +207,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         representation['ingredients'] = RecipeIngredientSerializer(
             instance.recipe_ingredients.all(), many=True
         ).data
+        representation['tags'] = TagSerializer(
+            instance.tags.all(), many=True
+        ).data
 
-        representation['tags'] = [
-            {
-                'id': tag.id,
-                'name': tag.name,
-                'slug': tag.slug
-            }
-            for tag in instance.tags.all()
-        ]
         return representation
 
     def validate(self, data):
