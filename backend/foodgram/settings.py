@@ -39,7 +39,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# CSRF_TRUSTED_ORIGINS = ['https://taskilearn.hopto.org']
+CSRF_TRUSTED_ORIGINS = ['https://taskilearn.hopto.org']
 
 ROOT_URLCONF = 'foodgram.urls'
 
