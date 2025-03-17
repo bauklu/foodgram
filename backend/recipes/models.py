@@ -169,80 +169,88 @@ class Subscribe(models.Model):
         return f'{self.user}, {self.subscription}'
 
 
-# class BaseUserRecipeRelation(models.Model):
-#     """Абстрактная модель для связи пользователя и рецепта."""
-
-#     user = models.ForeignKey(
-#         "users.User",
-#         on_delete=models.CASCADE,
-#         related_name="%(class)s_related"
-#     )
-#     recipe = models.ForeignKey(
-#         "recipes.Recipe",
-#         on_delete=models.CASCADE,
-#         related_name="%(app_label)s_%(class)s"
-#     )
-
-#     class Meta:
-#         """Устанавливает уникальность пары (user, recipe)."""
-#         abstract = True
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=['user', 'recipe'],
-#                 name='unique_%(class)s'
-#             )
-#         ]
-
-#     def __str__(self):
-#         """Возвращает строковое представление модели."""
-#         return f"{self.user.username} -> {self.recipe.name}"
-
-
-# class Favorite(BaseUserRecipeRelation):
-#     """Модель избранные рецепты."""
-#     pass
-
-
-class Favorite(models.Model):
-    """Модель избранные рецепты."""
+class BaseUserRecipeRelation(models.Model):
+    """Абстрактная модель для связи пользователя и рецепта."""
 
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='favorites'
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="%(class)s_related"
     )
     recipe = models.ForeignKey(
-        Recipe,
+        "recipes.Recipe",
         on_delete=models.CASCADE,
-        related_name='favorited_by'
+        related_name="%(app_label)s_%(class)s"
     )
 
     class Meta:
-        """Определяет модель и поля для избанных рецептов."""
-
-        unique_together = ('user', 'recipe')
+        """Устанавливает уникальность пары (user, recipe)."""
+        abstract = True
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_%(class)s'
+            )
+        ]
 
     def __str__(self):
         """Возвращает строковое представление модели."""
-        return f'{self.user.username} -> {self.recipe.name}'
+        return f"{self.user.username} -> {self.recipe.name}"
 
 
-# class ShoppingCart(BaseUserRecipeRelation):
-#     """Модель для списка покупок."""
-#     pass
-
-
-class ShoppingCart(models.Model):
-    """Модель для списка покупок."""
-
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='shopping_cart'
-    )
+class Favorite(BaseUserRecipeRelation):
+    """Модель избранные рецепты."""
     recipe = models.ForeignKey(
-        Recipe,
+        "recipes.Recipe",
         on_delete=models.CASCADE,
-        related_name='in_shopping_cart'
+        related_name="favorited_by"  # Явно указываем related_name
     )
 
-    class Meta:
-        """Определяет модель и поля для списка покупок."""
 
-        unique_together = ('user', 'recipe')
+# class Favorite(models.Model):
+#     """Модель избранные рецепты."""
+
+#     user = models.ForeignKey(
+#         User, on_delete=models.CASCADE, related_name='favorites'
+#     )
+#     recipe = models.ForeignKey(
+#         Recipe,
+#         on_delete=models.CASCADE,
+#         related_name='favorited_by'
+#     )
+
+    # class Meta:
+    #     """Определяет модель и поля для избанных рецептов."""
+
+    #     unique_together = ('user', 'recipe')
+
+    # def __str__(self):
+    #     """Возвращает строковое представление модели."""
+    #     return f'{self.user.username} -> {self.recipe.name}'
+
+
+class ShoppingCart(BaseUserRecipeRelation):
+    """Модель для списка покупок."""
+    recipe = models.ForeignKey(
+        "recipes.Recipe",
+        on_delete=models.CASCADE,
+        related_name="in_shopping_cart"  # Явно указываем related_name
+    )
+
+
+# class ShoppingCart(models.Model):
+#     """Модель для списка покупок."""
+
+#     user = models.ForeignKey(
+#         User, on_delete=models.CASCADE, related_name='shopping_cart'
+#     )
+#     recipe = models.ForeignKey(
+#         Recipe,
+#         on_delete=models.CASCADE,
+#         related_name='in_shopping_cart'
+#     )
+
+    # class Meta:
+    #     """Определяет модель и поля для списка покупок."""
+
+    #     unique_together = ('user', 'recipe')
