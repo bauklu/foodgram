@@ -19,10 +19,10 @@ class RecipeAdmin(admin.ModelAdmin):
                     'author',
                     'text',
                     'cooking_time',
-                    'display_tags'
-                    # 'favorite_count'
+                    'display_tags',
+                    'favorite_count'
                     )
-    # readonly_fields = ('favorite_count',)
+    readonly_fields = ('favorite_count',)
     search_fields = ('author', 'name')
     list_filter = ('author', 'name', 'tags',)
     list_editable = ('name', 'text', 'cooking_time')
@@ -32,10 +32,10 @@ class RecipeAdmin(admin.ModelAdmin):
         """Выводит теги в списке рецептов."""
         return ', '.join(tag.name for tag in obj.tags.all())
 
-    # def favorite_count(self, obj):
-    #     """Добавляет количество добавлений рецепта в избранное."""
-    #     return obj.favorited_by.count()
-    # favorite_count.short_description = 'Добавлений в избранное'
+    def favorite_count(self, obj):
+        """Добавляет количество добавлений рецепта в избранное."""
+        return obj.favorited_by.count()
+    favorite_count.short_description = 'Добавлений в избранное'
 
 
 @admin.register(Ingredient)

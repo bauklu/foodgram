@@ -169,48 +169,80 @@ class Subscribe(models.Model):
         return f'{self.user}, {self.subscription}'
 
 
-class BaseUserRecipeRelation(models.Model):
-    """Абстрактная модель для связи пользователя и рецепта."""
+# class BaseUserRecipeRelation(models.Model):
+#     """Абстрактная модель для связи пользователя и рецепта."""
+
+#     user = models.ForeignKey(
+#         "users.User",
+#         on_delete=models.CASCADE,
+#         related_name="%(class)s_related"
+#     )
+#     recipe = models.ForeignKey(
+#         "recipes.Recipe",
+#         on_delete=models.CASCADE,
+#         related_name="%(app_label)s_%(class)s"
+#     )
+
+#     class Meta:
+#         """Устанавливает уникальность пары (user, recipe)."""
+#         abstract = True
+#         constraints = [
+#             models.UniqueConstraint(
+#                 fields=['user', 'recipe'],
+#                 name='unique_%(class)s'
+#             )
+#         ]
+
+#     def __str__(self):
+#         """Возвращает строковое представление модели."""
+#         return f"{self.user.username} -> {self.recipe.name}"
+
+
+# class Favorite(BaseUserRecipeRelation):
+#     """Модель избранные рецепты."""
+#     pass
+
+
+class Favorite(models.Model):
+    """Модель избранные рецепты."""
 
     user = models.ForeignKey(
-        "users.User",
-        on_delete=models.CASCADE,
-        related_name="%(class)s_related"
+        User, on_delete=models.CASCADE, related_name='favorites'
     )
     recipe = models.ForeignKey(
-        "recipes.Recipe",
+        Recipe,
         on_delete=models.CASCADE,
-        related_name="%(app_label)s_%(class)s"
+        related_name='favorited_by'
     )
 
     class Meta:
-        """Устанавливает уникальность пары (user, recipe)."""
-        abstract = True
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'recipe'],
-                name='unique_%(class)s'
-            )
-        ]
+        """Определяет модель и поля для избанных рецептов."""
+
+        unique_together = ('user', 'recipe')
 
     def __str__(self):
         """Возвращает строковое представление модели."""
-        return f"{self.user.username} -> {self.recipe.name}"
+        return f'{self.user.username} -> {self.recipe.name}'
 
 
-class Favorite(BaseUserRecipeRelation):
-    """Модель избранные рецепты."""
-    recipe = models.ForeignKey(
-        "recipes.Recipe",
-        on_delete=models.CASCADE,
-        related_name="favorited_by"
-    )
+# class ShoppingCart(BaseUserRecipeRelation):
+#     """Модель для списка покупок."""
+#     pass
 
 
-class ShoppingCart(BaseUserRecipeRelation):
+class ShoppingCart(models.Model):
     """Модель для списка покупок."""
-    recipe = models.ForeignKey(
-        "recipes.Recipe",
-        on_delete=models.CASCADE,
-        related_name="in_shopping_cart"
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='shopping_cart'
     )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='in_shopping_cart'
+    )
+
+    class Meta:
+        """Определяет модель и поля для списка покупок."""
+
+        unique_together = ('user', 'recipe')
