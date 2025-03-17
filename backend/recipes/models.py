@@ -173,12 +173,14 @@ class BaseUserRecipeRelation(models.Model):
     """Абстрактная модель для связи пользователя и рецепта."""
 
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="%(class)s_related"
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="%(class)s_related"
     )
     recipe = models.ForeignKey(
         "recipes.Recipe",
         on_delete=models.CASCADE,
-        related_name="%(class)s_related"
+        related_name="%(app_label)s_%(class)s"
     )
 
     class Meta:
@@ -198,49 +200,17 @@ class BaseUserRecipeRelation(models.Model):
 
 class Favorite(BaseUserRecipeRelation):
     """Модель избранные рецепты."""
-    pass
-
-
-# class Favorite(models.Model):
-#     """Модель избранные рецепты."""
-
-#     user = models.ForeignKey(
-#         User, on_delete=models.CASCADE, related_name='favorites'
-#     )
-#     recipe = models.ForeignKey(
-#         Recipe,
-#         on_delete=models.CASCADE,
-#         related_name='favorited_by'
-#     )
-
-#     class Meta:
-#         """Определяет модель и поля для избанных рецептов."""
-
-#         unique_together = ('user', 'recipe')
-
-#     def __str__(self):
-#         """Возвращает строковое представление модели."""
-#         return f'{self.user.username} -> {self.recipe.name}'
+    recipe = models.ForeignKey(
+        "recipes.Recipe",
+        on_delete=models.CASCADE,
+        related_name="favorited_by"
+    )
 
 
 class ShoppingCart(BaseUserRecipeRelation):
     """Модель для списка покупок."""
-    pass
-
-
-# class ShoppingCart(models.Model):
-#     """Модель для списка покупок."""
-
-#     user = models.ForeignKey(
-#         User, on_delete=models.CASCADE, related_name='shopping_cart'
-#     )
-#     recipe = models.ForeignKey(
-#         Recipe,
-#         on_delete=models.CASCADE,
-#         related_name='in_shopping_cart'
-#     )
-
-#     class Meta:
-#         """Определяет модель и поля для списка покупок."""
-
-#         unique_together = ('user', 'recipe')
+    recipe = models.ForeignKey(
+        "recipes.Recipe",
+        on_delete=models.CASCADE,
+        related_name="in_shopping_cart"
+    )
