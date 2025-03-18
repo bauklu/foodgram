@@ -247,6 +247,13 @@ class RecipeSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
                     'ingredients': f'Ингредиент {ingredient_id} указан дважды.'
                 })
+            try:
+                amount = int(amount)
+            except ValueError:
+                raise serializers.ValidationError({
+                    'ingredients': 'Количество должно быть числом.'
+            })
+            
             if amount < 1:
                 raise serializers.ValidationError({
                     'ingredients': (
