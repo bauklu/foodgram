@@ -252,8 +252,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             except ValueError:
                 raise serializers.ValidationError({
                     'ingredients': 'Количество должно быть числом.'
-            })
-            
+                })
             if amount < 1:
                 raise serializers.ValidationError({
                     'ingredients': (
