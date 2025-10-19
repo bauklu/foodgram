@@ -55,8 +55,17 @@
   docker-compose exec backend python manage.py runserver 0.0.0.0:8000
   
 
-## Инструменты и стек:
- #python #JSON #YAML #Django #React #API #Docker #Nginx #PostgreSQL #Gunicorn #JWT #Postman
+## Стек технологий:
+- Python 3, Django, DRF
+- PostgreSQL
+- Docker, Docker Compose
+- Nginx
+- Gunicorn
+- JWT
+- API
+- CI/CD: GitHub Actions (деплой на сервер)
+- API
+- Postman
 
 ### Как запустить проект:
 
