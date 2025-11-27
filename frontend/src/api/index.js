@@ -84,7 +84,7 @@ class Api {
 
   changePassword({ current_password, new_password }) {
     const token = localStorage.getItem("token");
-    r// eturn fetch(`/api/users/set_password/`, {
+    // return fetch(`/api/users/set_password/`, {
     return fetch(`${this._url}/api/users/set_password/`, {
       method: "POST",
       headers: {
