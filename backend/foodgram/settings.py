@@ -32,6 +32,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -123,9 +124,11 @@ USE_L10N = True
 USE_TZ = True
 
 
-STATIC_URL = 'backend_static/'
+STATIC_URL = '/backend_static/'
 # STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'collected_static'
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
