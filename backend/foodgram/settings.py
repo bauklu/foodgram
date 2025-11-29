@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'users',
+    'corsheaders',
     'recipes.apps.RecipesConfig',
     'rest_framework',
     'rest_framework.authtoken',
@@ -32,6 +33,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -39,7 +41,17 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['https://taskilearn.hopto.org']
+# CSRF_TRUSTED_ORIGINS = ['https://taskilearn.hopto.org']
+
+CORS_ALLOWED_ORIGINS = [
+    "https://foodgram-frontend-br4f.onrender.com",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://foodgram-frontend-br4f.onrender.com",
+]
+
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'foodgram.urls'
 
